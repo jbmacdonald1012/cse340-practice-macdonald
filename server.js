@@ -11,18 +11,26 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 
-// app.set('views', path.join(__dirname, 'src/views'));
+app.set('views', path.join(__dirname, 'src/views'));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'src/views/home.html'));
+  const title = 'Welcome Home';
+  res.render('home', { title });
 });
 app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'src/views/about.html'));
+  const title = 'About Us';
+  res.render('about', { title });
 });
 app.get('/products', (req, res) => {
-  res.sendFile(path.join(__dirname, 'src/views/products.html'));
+  const title = 'Our Products';
+  res.render('products', { title });
+});
+
+app.get('/student', (req, res) => {
+  const title = 'Student Information';
+  res.render('student', { title });
 });
 
 app.listen(PORT, () => {
