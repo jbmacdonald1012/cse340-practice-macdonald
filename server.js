@@ -39,6 +39,62 @@ app.get('/student', (req, res) => {
   res.render('student', { title, NODE_ENV });
 });
 
+app.get('/test-error', (req, res, next) => {
+  const err = new Error('This is a test error');
+  err.status = 500;
+  next(err);
+});
+
+app.get('/admin', (req, res, next) => {
+  const err = new Error('Access Denied');
+  err.status = 403;
+  next(err);
+});
+
+app.use((req, res, next) => {
+  const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+});
+
+app.use((error, req, res, next) => {
+  if (res.headersSent || res.finished) {
+    return next(error);
+  }
+
+  const status = error.status || 500;
+  let template;
+  switch(status) {
+    case 404:
+      template = '404';
+      break;
+    case 403:
+      template = '403';
+      break;
+    default:
+      template = '500';
+  }
+
+  const context = {
+    title: status === 404 ? 'Page Not Found' : 'Server Error',
+    error: NODE_ENV === 'production' ? 'An error occurred' : error.message,
+    stack: NODE_ENV === 'production' ? null : error.stack,
+    NODE_ENV
+  };
+
+  try
+  {
+    res.status(status).render(`errors/${template}`, context);
+  }
+  catch (renderError)
+  {
+    if(!res.headersSent) {
+      res.status(status).send(`<h1>Error ${status}</h1><p>'An error occurred.'</p>`);
+    }
+  }
+
+});
+
 if (NODE_ENV.includes('dev') || NODE_ENV === 'development') {
   import('ws')
     .then(({ WebSocketServer }) => {
