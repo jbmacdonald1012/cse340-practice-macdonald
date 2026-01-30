@@ -56,6 +56,54 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  // Add current year for copyright
+  res.locals.currentYear = new Date().getFullYear();
+  next();
+});
+
+app.use((req, res, next) => {
+  const currentHour = new Date().getHours();
+  let greeting;
+
+  switch (true) {
+    case currentHour >= 0 && currentHour < 12:
+      greeting = 'Good Morning';
+      break;
+    case currentHour >= 12 && currentHour < 17:
+      greeting = 'Good Afternoon';
+      break;
+    case currentHour >= 17:
+      greeting = 'Good Evening';
+      break;
+    default:
+      greeting = 'Hello';
+  }
+
+  res.locals.greeting = greeting;
+  next();
+});
+
+app.use((req, res, next) => {
+  const themes = ['blue-theme', 'green-theme', 'red-theme'];
+  const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+
+  res.locals.bodyClass = randomTheme;
+  next();
+});
+
+app.use((req, res, next) => {
+  res.locals.queryParams = req.query || {};
+    next();
+});
+
+const addDemoHeaders = (req, res, next) => {
+  res.setHeader('X-Demo-Page', true);
+  res.setHeader('X-Middleware0Demo', 'This header is for a demo page');
+  next();
+}
+
+
 app.get('/', (req, res) => {
   const title = 'Welcome Home';
   res.render('home', { title, NODE_ENV });
@@ -127,6 +175,12 @@ app.get('/catalog/:courseId', (req, res, next) => {
     currentSort: sortBy
   });
 });
+
+app.get('/demo', addDemoHeaders, (req, res) => {
+  res.render('demo' , {
+    title: "Middleware Demo Page"
+  })
+})
 
 app.use((req, res, next) => {
   const error = new Error('Not Found');
