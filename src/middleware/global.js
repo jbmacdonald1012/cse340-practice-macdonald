@@ -34,8 +34,7 @@ const addLocalVariables = (req, res, next) => {
 
     // Randomly assign a theme class to the body
     const themes = ['blue-theme', 'green-theme', 'red-theme'];
-    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-    res.locals.bodyClass = randomTheme;
+    res.locals.bodyClass = themes[Math.floor(Math.random() * themes.length)];
 
     // Continue to the next middleware or route handler
     next();
