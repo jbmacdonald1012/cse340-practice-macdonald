@@ -6,9 +6,9 @@ const courses = {
         description: 'Learn programming fundamentals using JavaScript and basic web development concepts.',
         credits: 3,
         sections: [
-            { time: '9:00 AM', room: 'STC 392', professor: 'Brother Jack' },
-            { time: '2:00 PM', room: 'STC 394', professor: 'Sister Enkey' },
-            { time: '11:00 AM', room: 'STC 390', professor: 'Brother Keers' }
+            { time: '9:00 AM', room: 'STC 392', facultyId: 'brother-jack' },
+            { time: '2:00 PM', room: 'STC 394', facultyId: 'sister-enkey' },
+            { time: '11:00 AM', room: 'STC 390', facultyId: 'brother-keers' }
         ]
     },
     'CS162': {
@@ -18,8 +18,8 @@ const courses = {
         description: 'Object-oriented programming concepts and software development practices.',
         credits: 3,
         sections: [
-            { time: '10:00 AM', room: 'STC 392', professor: 'Brother Jack' },
-            { time: '1:00 PM', room: 'STC 394', professor: 'Sister Enkey' }
+            { time: '10:00 AM', room: 'STC 392', facultyId: 'brother-jack' },
+            { time: '1:00 PM', room: 'STC 394', facultyId: 'sister-enkey' }
         ]
     },
     'MATH113': {
@@ -29,9 +29,9 @@ const courses = {
         description: 'Fundamental algebra concepts including functions, polynomials, and equations.',
         credits: 3,
         sections: [
-            { time: '8:00 AM', room: 'STC 290', professor: 'Sister Peterson' },
-            { time: '11:00 AM', room: 'STC 292', professor: 'Brother Thompson' },
-            { time: '3:00 PM', room: 'STC 290', professor: 'Sister Anderson' }
+            { time: '8:00 AM', room: 'STC 290', facultyId: 'sister-peterson' },
+            { time: '11:00 AM', room: 'STC 292', facultyId: 'brother-thompson' },
+            { time: '3:00 PM', room: 'STC 290', facultyId: 'sister-anderson' }
         ]
     },
     'MATH119': {
@@ -41,8 +41,8 @@ const courses = {
         description: 'Introduction to differential and integral calculus with applications.',
         credits: 4,
         sections: [
-            { time: '9:00 AM', room: 'STC 290', professor: 'Brother Thompson' },
-            { time: '2:00 PM', room: 'STC 292', professor: 'Sister Anderson' }
+            { time: '9:00 AM', room: 'STC 290', facultyId: 'brother-thompson' },
+            { time: '2:00 PM', room: 'STC 292', facultyId: 'sister-anderson' }
         ]
     },
     'ENG101': {
@@ -52,9 +52,9 @@ const courses = {
         description: 'Develop writing skills for academic and professional communication.',
         credits: 3,
         sections: [
-            { time: '10:00 AM', room: 'GEB 201', professor: 'Sister Anderson' },
-            { time: '12:00 PM', room: 'GEB 205', professor: 'Brother Davis' },
-            { time: '4:00 PM', room: 'GEB 203', professor: 'Sister Enkey' }
+            { time: '10:00 AM', room: 'GEB 201', facultyId: 'sister-anderson' },
+            { time: '12:00 PM', room: 'GEB 205', facultyId: 'brother-davis' },
+            { time: '4:00 PM', room: 'GEB 203', facultyId: 'sister-enkey' }
         ]
     },
     'ENG102': {
@@ -64,8 +64,8 @@ const courses = {
         description: 'Advanced writing skills through the study of literature and critical analysis.',
         credits: 3,
         sections: [
-            { time: '11:00 AM', room: 'GEB 201', professor: 'Brother Davis' },
-            { time: '1:00 PM', room: 'GEB 205', professor: 'Sister Enkey' }
+            { time: '11:00 AM', room: 'GEB 201', facultyId: 'brother-davis' },
+            { time: '1:00 PM', room: 'GEB 205', facultyId: 'sister-enkey' }
         ]
     },
     'HIST105': {
@@ -75,8 +75,8 @@ const courses = {
         description: 'Survey of world civilizations from ancient times to the present.',
         credits: 3,
         sections: [
-            { time: '9:00 AM', room: 'GEB 301', professor: 'Brother Wilson' },
-            { time: '2:00 PM', room: 'GEB 305', professor: 'Sister Roberts' }
+            { time: '9:00 AM', room: 'GEB 301', facultyId: 'brother-wilson' },
+            { time: '2:00 PM', room: 'GEB 305', facultyId: 'sister-roberts' }
         ]
     }
 };
@@ -95,7 +95,12 @@ const getSortedSections = (sections, sortBy) => {
 
     switch (sortBy) {
         case 'professor':
-            return sortedSections.sort((a, b) => a.professor.localeCompare(b.professor));
+            return sortedSections.sort((a, b) => {
+                // Compare by faculty name if available, otherwise by facultyId
+                const nameA = a.faculty?.name || a.facultyId;
+                const nameB = b.faculty?.name || b.facultyId;
+                return nameA.localeCompare(nameB);
+            });
         case 'room':
             return sortedSections.sort((a, b) => a.room.localeCompare(b.room));
         case 'time':
