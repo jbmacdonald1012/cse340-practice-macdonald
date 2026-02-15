@@ -13,7 +13,7 @@ router.get('/about', aboutPage);
 
 // Course catalog routes
 router.get('/catalog', catalogPage);
-router.get('/catalog/:courseId', courseDetailPage);
+router.get('/catalog/:courseSlug', courseDetailPage);
 
 // Demo page with special middleware
 router.get('/demo', addDemoHeaders, demoPage);
