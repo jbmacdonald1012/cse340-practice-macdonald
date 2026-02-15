@@ -9,23 +9,29 @@
     <div class="sections">
         <div class="sections-header">
             <h2>Available Sections</h2>
-            <div class="sort-options">
-                <span>Sort by: </span>
-                <a href="/catalog/<%= course.slug %>" class="<%= currentSort === 'time' ? 'active' : '' %>">Time</a>
-                <a href="/catalog/<%= course.slug %>?sort=professor" class="<%= currentSort === 'professor' ? 'active' : '' %>">Professor</a>
-                <a href="/catalog/<%= course.slug %>?sort=room" class="<%= currentSort === 'room' ? 'active' : '' %>">Room</a>
-            </div>
+            <% if (sections.length > 0) { %>
+                <div class="sort-options">
+                    <span>Sort by: </span>
+                    <a href="/catalog/<%= course.slug %>" class="<%= currentSort === 'time' ? 'active' : '' %>">Time</a>
+                    <a href="/catalog/<%= course.slug %>?sort=professor" class="<%= currentSort === 'professor' ? 'active' : '' %>">Professor</a>
+                    <a href="/catalog/<%= course.slug %>?sort=room" class="<%= currentSort === 'room' ? 'active' : '' %>">Room</a>
+                </div>
+            <% } %>
         </div>
 
-        <% sections.forEach(section => { %>
-            <div class="section">
-                <div class="section-time"><%= section.time %></div>
-                <div class="section-room"><%= section.room %></div>
-                <div class="section-professor">
-                    <a href="/faculty/<%= section.professorSlug %>"><%= section.professor %></a>
+        <% if (sections.length > 0) { %>
+            <% sections.forEach(section => { %>
+                <div class="section">
+                    <div class="section-time"><%= section.time %></div>
+                    <div class="section-room"><%= section.room %></div>
+                    <div class="section-professor">
+                        <a href="/faculty/<%= section.professorSlug %>"><%= section.professor %></a>
+                    </div>
                 </div>
-            </div>
-        <% }); %>
+            <% }); %>
+        <% } else { %>
+            <p class="no-sections">No sections are currently scheduled for this course. Please check back later or contact the <%= course.department %> department for more information.</p>
+        <% } %>
     </div>
 
     <div class="navigation">

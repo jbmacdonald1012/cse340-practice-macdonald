@@ -14,7 +14,7 @@ const catalogPage = async (req, res) => {
 
 // Route handler for individual course detail pages
 const courseDetailPage = async (req, res, next) => {
-    const courseId = req.params.slugId;
+    const courseSlug = req.params.courseSlug;
     
     // Model functions are async, so we must await them
     const course = await getCourseBySlug(courseSlug);
@@ -31,6 +31,7 @@ const courseDetailPage = async (req, res, next) => {
     // Pass the sortBy parameter directly to the model - PostgreSQL handles the sorting
     const sortBy = req.query.sort || 'time';
     const sections = await getSectionsByCourseSlug(courseSlug, sortBy);
+
     
     res.render('course-detail', {
         title: `${course.courseCode} - ${course.name}`,
