@@ -1,4 +1,34 @@
 /**
+ * Initializes per-request asset queues and attaches res.addStyle / res.addScript methods.
+ * Exposes renderStyles() and renderScripts() to EJS templates via res.locals.
+ * Assets are emitted in descending priority order (higher number = earlier in output).
+ */
+const setHeadAssetsFunctionality = (res) => {
+    res.locals.styles = [];
+    res.locals.scripts = [];
+
+    res.addStyle = (css, priority = 0) => {
+        res.locals.styles.push({ content: css, priority });
+    };
+
+    res.addScript = (js, priority = 0) => {
+        res.locals.scripts.push({ content: js, priority });
+    };
+
+    res.locals.renderStyles = () =>
+        res.locals.styles
+            .sort((a, b) => b.priority - a.priority)
+            .map(asset => asset.content)
+            .join('\n');
+
+    res.locals.renderScripts = () =>
+        res.locals.scripts
+            .sort((a, b) => b.priority - a.priority)
+            .map(asset => asset.content)
+            .join('\n');
+};
+
+/**
  * Helper function to get the current greeting based on the time of day.
  */
 const getCurrentGreeting = () => {
@@ -35,6 +65,8 @@ const addLocalVariables = (req, res, next) => {
     // Randomly assign a theme class to the body
     const themes = ['blue-theme', 'green-theme', 'red-theme'];
     res.locals.bodyClass = themes[Math.floor(Math.random() * themes.length)];
+
+    setHeadAssetsFunctionality(res);
 
     // Continue to the next middleware or route handler
     next();
