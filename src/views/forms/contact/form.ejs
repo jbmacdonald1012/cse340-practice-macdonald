@@ -1,0 +1,38 @@
+<%- include('../../partials/header') %>
+<main>
+    <div class="contact-container">
+        <h1>Contact Us</h1>
+        <p>Fill out the form below to send us a message.</p>
+
+        <form class="contact-form" action="/contact" method="POST" novalidate>
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    minlength="2"
+                    required
+                    placeholder="Enter a subject (min. 2 characters)"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea
+                    id="message"
+                    name="message"
+                    minlength="10"
+                    required
+                    placeholder="Enter your message (min. 10 characters)"
+                ></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Send Message</button>
+                <a href="/contact/responses">View Responses</a>
+            </div>
+        </form>
+    </div>
+</main>
+<%- include('../../partials/footer') %>
