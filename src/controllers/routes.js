@@ -4,6 +4,7 @@ import { catalogPage, courseDetailPage } from './catalog/catalog.js';
 import { facultyListPage, facultyDetailPage } from './faculty/faculty.js'
 import { homePage, aboutPage, demoPage, testErrorPage } from './index.js';
 import contactRoutes from './forms/contact.js';
+import registrationRoutes from './forms/registration.js';
 
 // Create a new router instance
 const router = Router();
@@ -41,5 +42,12 @@ router.get('/faculty', facultyListPage );
 router.get('/faculty/:facultyId', facultyDetailPage);
 
 router.use('/contact', contactRoutes);
+
+router.use('/register', (req, res, next) => {
+    res.addStyle('<link rel="stylesheet" href="/css/registration.css">');
+    next();
+});
+
+router.use('/register', registrationRoutes);
 
 export default router;

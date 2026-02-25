@@ -1,6 +1,10 @@
 {
   "name": "cse340-practice-macdonald",
+  "pnpm": {
+    "onlyBuiltDependencies": ["bcrypt"]
+  },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "ejs": "^4.0.1",
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
