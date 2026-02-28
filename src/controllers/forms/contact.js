@@ -18,13 +18,21 @@ const showContactForm = (req, res) => {
 const handleContactSubmission = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.error('Contact form validation errors:', errors.array());
+        errors.array().forEach(error => req.flash('error', error.msg));
         return res.redirect('/contact');
     }
 
     const { subject, message } = req.body;
-    await createContactForm(subject, message);
-    res.redirect('/contact/responses');
+
+    try {
+        await createContactForm(subject, message);
+        req.flash('success', 'Thank you for contacting us! We will respond soon.');
+        res.redirect('/contact');
+    } catch (error) {
+        console.error('Error saving contact form:', error);
+        req.flash('error', 'Unable to submit your message. Please try again later.');
+        res.redirect('/contact');
+    }
 };
 
 const showContactResponses = async (req, res) => {

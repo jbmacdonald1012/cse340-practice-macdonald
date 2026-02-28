@@ -7,6 +7,7 @@ import { caCert } from './src/models/db.js';
 import { startSessionCleanup } from './src/utils/session-cleanup.js';
 import routes from './src/controllers/routes.js';
 import { addLocalVariables } from './src/middleware/global.js';
+import flash from './src/middleware/flash.js';
 import { setupDatabase, testConnection } from './src/models/setup.js';
 
 /**
@@ -66,6 +67,7 @@ app.set('views', path.join(__dirname, 'src/views'));
  * Global Middleware
  */
 app.use(addLocalVariables);
+app.use(flash);
 
 /**
  * Routes

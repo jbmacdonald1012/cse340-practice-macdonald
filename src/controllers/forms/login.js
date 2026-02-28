@@ -33,9 +33,8 @@ const processLogin = async (req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        console.log('Login validation errors:', errors.array());
-        res.redirect('/login');
-        return;
+        errors.array().forEach(error => req.flash('error', error.msg));
+        return res.redirect('/login');
     }
 
     const { email, password } = req.body;
@@ -44,26 +43,28 @@ const processLogin = async (req, res) => {
         const user = await findUserByEmail(email);
 
         if (!user) {
-            console.log('Login failed: User not found for email:', email);
-            res.redirect('/login');
-            return;
+            console.error('Login failed: User not found for email:', email);
+            req.flash('error', 'Login Failed');
+            return res.redirect('/login');
         }
 
         const passwordValid = await verifyPassword(password, user.password);
 
         if (!passwordValid) {
-            console.log('Login failed: Invalid password for email:', email);
-            res.redirect('/login');
-            return;
+            console.error('Login failed: Invalid password for email:', email);
+            req.flash('error', 'Login Failed');
+            return res.redirect('/login');
         }
 
         // SECURITY: Remove password from user object before storing in session
         delete user.password;
 
         req.session.user = user;
+        req.flash('success', `Welcome back, ${user.first_name}!`);
         res.redirect('/dashboard');
     } catch (error) {
-        console.log('Login error:', error);
+        console.error('Login error:', error);
+        req.flash('error', 'Unable to log in. Please try again later.');
         res.redirect('/login');
     }
 };

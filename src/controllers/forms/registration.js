@@ -29,21 +29,28 @@ const showRegistrationForm = (req, res) => {
 const processRegistration = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.error('Registration validation errors:', errors.array());
+        errors.array().forEach(error => req.flash('error', error.msg));
         return res.redirect('/register');
     }
 
     const { name, email, password } = req.body;
 
-    const duplicate = await emailExists(email);
-    if (duplicate) {
-        console.error('Email already registered:', email);
-        return res.redirect('/register');
-    }
+    try {
+        const duplicate = await emailExists(email);
+        if (duplicate) {
+            req.flash('warning', 'An account with that email already exists. Please log in.');
+            return res.redirect('/register');
+        }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await saveUser(name, email, hashedPassword);
-    res.redirect('/register/list');
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await saveUser(name, email, hashedPassword);
+        req.flash('success', 'Registration successful! Please log in.');
+        res.redirect('/login');
+    } catch (error) {
+        console.error('Error saving registration:', error);
+        req.flash('error', 'Unable to complete registration. Please try again later.');
+        res.redirect('/register');
+    }
 };
 
 const showAllUsers = async (req, res) => {
