@@ -15,4 +15,22 @@ const requireLogin = (req, res, next) => {
     }
 };
 
-export { requireLogin };
+/**
+ * Middleware factory to require a specific role.
+ * @param {string} roleName - e.g. 'admin'
+ */
+const requireRole = (roleName) => {
+    return (req, res, next) => {
+        if (!req.session || !req.session.user) {
+            req.flash('error', 'You must be logged in to access this page.');
+            return res.redirect('/login');
+        }
+        if (req.session.user.roleName !== roleName) {
+            req.flash('error', 'You do not have permission to access this page.');
+            return res.redirect('/');
+        }
+        next();
+    };
+};
+
+export { requireLogin, requireRole };

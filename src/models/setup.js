@@ -2,9 +2,61 @@ import db from './db.js';
 import fs from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import bcrypt from 'bcrypt';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const seedPracticeUsers = async () => {
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS, 10);
+    const seedPassword = process.env.SEED_USER_PASSWORD;
+
+    if (!saltRounds || isNaN(saltRounds)) {
+        throw new Error('Missing required env var: BCRYPT_SALT_ROUNDS');
+    }
+    if (!seedPassword) {
+        throw new Error('Missing required env var: SEED_USER_PASSWORD');
+    }
+
+    const hashedPassword = await bcrypt.hash(seedPassword, saltRounds);
+
+    const userRoleResult = await db.query(
+        "SELECT id FROM roles WHERE role_name = 'user'"
+    );
+    const adminRoleResult = await db.query(
+        "SELECT id FROM roles WHERE role_name = 'admin'"
+    );
+    const userRoleId = userRoleResult.rows[0]?.id;
+    const adminRoleId = adminRoleResult.rows[0]?.id;
+
+    if (!userRoleId || !adminRoleId) {
+        console.warn('Roles not found — skipping practice user seeding');
+        return;
+    }
+
+    // Patch existing users with no role — assign default 'user' role
+    await db.query(`
+        UPDATE users
+        SET role_id = $1
+        WHERE role_id IS NULL
+    `, [userRoleId]);
+
+    await db.query(`
+        INSERT INTO users (name, email, password, role_id)
+        VALUES ('Admin', 'admin@example.com', $1, $2)
+        ON CONFLICT (email) DO NOTHING
+    `, [hashedPassword, adminRoleId]);
+
+    await db.query(`
+        INSERT INTO users (name, email, password, role_id)
+        VALUES
+            ('User One', 'user1@example.com', $1, $2),
+            ('User Two', 'user2@example.com', $1, $2)
+        ON CONFLICT (email) DO NOTHING
+    `, [hashedPassword, userRoleId]);
+
+    console.log('Practice users seeded (existing accounts unchanged)');
+};
 
 /**
  * Sets up the database by running the seed.sql file if needed.
@@ -46,6 +98,8 @@ const setupDatabase = async () => {
         await db.query(practiceSQL);
         console.log('Practice database tables initialized');
     }
+
+    await seedPracticeUsers();
 
     return true;
 };

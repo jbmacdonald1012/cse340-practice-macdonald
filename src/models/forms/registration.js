@@ -7,12 +7,17 @@ const emailExists = async (email) => {
 };
 
 const saveUser = async (name, email, hashedPassword) => {
+    const roleResult = await db.query(
+        "SELECT id FROM roles WHERE role_name = 'user'"
+    );
+    const userRoleId = roleResult.rows[0]?.id ?? null;
+
     const query = `
-        INSERT INTO users (name, email, password)
-        VALUES ($1, $2, $3)
+        INSERT INTO users (name, email, password, role_id)
+        VALUES ($1, $2, $3, $4)
         RETURNING id, name, email, created_at
     `;
-    const result = await db.query(query, [name, email, hashedPassword]);
+    const result = await db.query(query, [name, email, hashedPassword, userRoleId]);
     return result.rows[0];
 };
 
@@ -26,4 +31,34 @@ const getAllUsers = async () => {
     return result.rows;
 };
 
-export { emailExists, saveUser, getAllUsers };
+const getUserById = async (id) => {
+    const query = `
+        SELECT
+            users.id, users.name, users.email, users.created_at,
+            roles.role_name AS "roleName"
+        FROM users
+        INNER JOIN roles ON users.role_id = roles.id
+        WHERE users.id = $1
+    `;
+    const result = await db.query(query, [id]);
+    return result.rows[0] || null;
+};
+
+const updateUser = async (id, name, email) => {
+    const query = `
+        UPDATE users
+        SET name = $1, email = $2, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $3
+        RETURNING id, name, email, updated_at
+    `;
+    const result = await db.query(query, [name, email, id]);
+    return result.rows[0] || null;
+};
+
+const deleteUser = async (id) => {
+    const query = 'DELETE FROM users WHERE id = $1';
+    const result = await db.query(query, [id]);
+    return result.rowCount > 0;
+};
+
+export { emailExists, saveUser, getAllUsers, getUserById, updateUser, deleteUser };

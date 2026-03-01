@@ -64,7 +64,7 @@ const processLogin = async (req, res) => {
         delete user.password;
 
         req.session.user = user;
-        req.flash('success', `Welcome back, ${user.first_name}!`);
+        req.flash('success', `Welcome back, ${user.name}!`);
         res.redirect('/dashboard');
     } catch (error) {
         console.error('Login error:', error);
