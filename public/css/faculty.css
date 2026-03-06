@@ -1,3 +1,25 @@
+/* Shared photo style (list and detail) */
+.faculty-photo {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 7px;
+    background: url('https://placehold.co/480') center / cover no-repeat;
+}
+
+/* Ensure the card has a stacking context for any future overlay effects */
+.faculty-card {
+    position: relative;
+}
+
+/* Detail page: constrain image width so it doesn't fill the whole container */
+.faculty-profile .faculty-photo {
+    width: 240px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
 .faculty-sorting {
     display: flex;
     gap: 1rem;
@@ -33,14 +55,15 @@
 
 .faculty-list {
     display: grid;
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
     max-width: 800px;
     margin: 0 auto;
 
     .faculty-card {
         border: 1px solid #ddd;
         border-radius: 8px;
-        padding: 1.5rem;
+        padding: 0.75rem;
         background: #fff;
         transition: box-shadow 0.2s ease;
 
